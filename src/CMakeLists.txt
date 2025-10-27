@@ -1,4 +1,5 @@
-file(GLOB SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
+file(GLOB CPP_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
+file(GLOB HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 
 file(GLOB IMAGES
     ${CMAKE_CURRENT_SOURCE_DIR}/images/*.jpg
@@ -20,13 +21,17 @@ file(GLOB_RECURSE SHADER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/*.tesc
 )
 
+source_group("Sources" FILES ${CPP_SOURCES})
+source_group("Headers" FILES ${HEADERS})
 source_group("Shaders" FILES ${SHADER_SOURCES})
 
+set(ALL_SOURCES ${CPP_SOURCES} ${HEADERS} ${SHADER_SOURCES})
+
 if(WIN32)
-    add_executable(vulkan_grass_rendering WIN32 ${SOURCES} ${SHADER_SOURCES})
+    add_executable(vulkan_grass_rendering WIN32 ${SOURCES} ${ALL_SOURCES})
     target_link_libraries(vulkan_grass_rendering ${WINLIBS})
 else(WIN32)
-    add_executable(vulkan_grass_rendering ${SOURCES})
+    add_executable(vulkan_grass_rendering ${ALL_SOURCES})
     target_link_libraries(vulkan_grass_rendering ${CMAKE_THREAD_LIBS_INIT})
 endif(WIN32)
 
