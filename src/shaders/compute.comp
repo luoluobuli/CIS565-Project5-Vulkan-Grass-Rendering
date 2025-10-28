@@ -23,29 +23,42 @@ struct Blade {
 
 // TODO: Add bindings to:
 // 1. Store the input blades
+
+layout(set = 2, binding = 0) buffer InputBlades {
+    Blade blades[];
+} inputBlades;
+
 // 2. Write out the culled blades
+
+layout(set = 2, binding = 1) buffer CulledBlades {
+    Blade blades[];
+} culledBlades;
+
 // 3. Write the total number of blades remaining
 
 // The project is using vkCmdDrawIndirect to use a buffer as the arguments for a draw call
 // This is sort of an advanced feature so we've showed you what this buffer should look like
-//
-// layout(set = ???, binding = ???) buffer NumBlades {
-// 	  uint vertexCount;   // Write the number of blades remaining here
-// 	  uint instanceCount; // = 1
-// 	  uint firstVertex;   // = 0
-// 	  uint firstInstance; // = 0
-// } numBlades;
+
+layout(set = 2, binding = 2) buffer NumBlades {
+    uint vertexCount;   // Write the number of blades remaining here
+    uint instanceCount; // = 1
+    uint firstVertex;   // = 0
+    uint firstInstance; // = 0
+} numBlades;
 
 bool inBounds(float value, float bounds) {
     return (value >= -bounds) && (value <= bounds);
 }
 
 void main() {
+    uint idx = gl_GlobalInvocationID.x;
 	// Reset the number of blades to 0
-	if (gl_GlobalInvocationID.x == 0) {
-		// numBlades.vertexCount = 0;
+	if (idx == 0) {
+		numBlades.vertexCount = 0;
 	}
 	barrier(); // Wait till all threads reach this point
+
+    if (idx >= inputBlades.blades.length()) return;
 
     // TODO: Apply forces on every blade and update the vertices in the buffer
 
@@ -53,4 +66,13 @@ void main() {
 	// to the culled blades buffer
 	// Note: to do this, you will need to use an atomic operation to read and update numBlades.vertexCount
 	// You want to write the visible blades to the buffer without write conflicts between threads
+
+    // Blade inBlade = inputBlades.blades[idx];
+    // if (inBounds(inBlade.v0.x, 10.0) && inBounds(inBlade.v0.z, 10.0)) { // temp
+    //     uint outIdx = atomicAdd(numBlades.vertexCount, 1);
+    //     culledBlades.blades[outIdx] = inBlade;
+    // }
+
+    culledBlades.blades[idx] = inputBlades.blades[idx];
+    atomicAdd(numBlades.vertexCount, 1);
 }
