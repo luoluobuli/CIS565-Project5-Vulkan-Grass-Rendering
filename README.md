@@ -6,7 +6,7 @@ Vulkan Grass Rendering
 * Joanne Li
 * Tested on: Windows 11, AMD Ryzen 5 7600X @ 4.70GHz 32GB, NVIDIA GeForce RTX 3070 Ti
 
-![](img/demo.gif)
+![](img/demo.gif)  
 *The gif takes some time to load*
 
 ## Overview
